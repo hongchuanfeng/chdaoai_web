@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Override Tailwind text-sm */
+.text-sm {
+  font-size: .875rem;
+  line-height: 1.25rem;
+}
+
+/* Override Tailwind px-2 */
+.px-2 {
+  padding-right: 0.1rem;
+}
+
+/* Override md:space-x-4 to use 0.5rem spacing */
+.md\:space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-right: calc(1rem * var(--tw-space-x-reverse)) !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Fix select dropdown text color */
+select {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+}
+
+select option {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+}
+
+/* Ensure select text is visible in all browsers */
+select:not([multiple]) {
+  color: #111827 !important;
+}
+
+/* Custom slider styles */
+.slider-thumb::-webkit-slider-thumb {
+  appearance: none;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  cursor: pointer;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider-thumb::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.slider-thumb::-moz-range-thumb {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  cursor: pointer;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider-thumb::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Prevent horizontal overflow and ensure a consistent light background on wide viewports */
+html, body {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  background-color: #ffffff;
+}

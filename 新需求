@@ -1,0 +1,895 @@
+将"AI变龄"、"性别转换"、"AI美颜" 这三个菜单一起放到“图片工具”菜单下面的二级菜单里面，
+就是导航栏：首页、图片工具、订阅，然后点击“图片工具” 显示二级菜单，请修改这个。
+
+在图片工具 然后再加上一个“视频工具”，
+它下面有四个菜单：视频去水印、视频转文字、视频转语音，旧片修复，先把这四个页面生成出来，功能可以先不实现。
+对应的页面要加上 功能说明、使用帮助、案例展示、常见问题，要实现多语言功能。
+
+
+视频工具 要跟 图片工具 都是一级菜单，明白我的意思吗，请重新修改。
+
+
+/video-watermark-removal 这个页面的案例图片是
+public/video/watermark/1.jpg,
+public/video/watermark/2.jpg,
+public/video/watermark/3.jpg,
+
+请修改下，然后实现多语言功能。
+
+
+
+/video-to-text 这个页面的案例图片是
+public/video/text/1.jpg,
+public/video/text/2.jpg,
+public/video/text/3.jpg,
+
+请修改下，然后实现多语言功能。
+
+
+
+/video-to-speech 这个页面的案例图片是
+public/video/speech/1.jpg,
+public/video/speech/2.jpg,
+public/video/speech/3.jpg,
+
+请修改下，然后实现多语言功能。
+
+
+
+
+/video-to-speech  除了中文与英文之外，其他都语言没实现，请好好检查下，然后实现多语言功能。
+
+
+
+
+/old-video-restoration 这个页面的案例图片是
+public/video/old/1.jpg,
+public/video/old/2.jpg,
+public/video/old/3.jpg,
+
+请修改下，然后实现多语言功能。
+
+
+葡萄牙语
+
+
+
+
+在视频工具 然后再加上一个“音频工具”，是一级菜单。
+它下面有六个菜单：音频剪辑合并、格式转换、人声分离，音频转文字，音频转字幕，音频修复，
+先把这六个页面生成出来，功能可以先不实现。
+对应的页面要加上 功能说明、使用帮助、案例展示、常见问题，要实现多语言功能。
+
+
+
+
+在音频工具 然后再加上一个“字幕工具”，是一级菜单。
+它下面有五个菜单：文字转字幕、字幕转文字、格式转化，字幕翻译，字幕合并，先把这五个页面生成出来，功能可以先不实现。
+对应的页面要加上 功能说明、使用帮助、案例展示、常见问题，要实现多语言功能。
+
+
+当鼠标移动一级菜单时候，显示二级菜单，其他的二级菜单要隐藏，明白我的意思吗，请修改这个。
+
+
+/text-to-subtitles，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+
+/text-to-subtitles 这个页面的示例图片是
+public/subtitles/text/1.jpg,
+public/subtitles/text/2.jpg,
+public/subtitles/text/3.jpg,
+
+
+/subtitles-to-text ，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+
+/subtitle-format-conversion，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+
+/subtitle-format-conversion这个页面的示例图片是
+public/subtitles/conversion/1.jpg,
+public/subtitles/conversion/2.jpg,
+public/subtitles/conversion/3.jpg,
+
+
+/subtitle-translation，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+
+/subtitle-translation ，这个页面的示例图片是
+public/subtitles/translation/1.jpg,
+public/subtitles/translation/2.jpg,
+public/subtitles/translation/3.jpg,
+
+
+/subtitle-merge，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+
+
+/subtitle-merge，这个页面的示例图片是
+public/subtitles/merge/1.jpg,
+public/subtitles/merge/2.jpg,
+public/subtitles/merge/3.jpg,
+
+
+
+/subtitles-to-text这个页面的示例图片是
+public/subtitles/totext/1.jpg,
+public/subtitles/totext/2.jpg,
+public/subtitles/totext/3.jpg,
+
+/audio-clip-merge 这个页面的示例图片是
+public/audio/merge/1.jpg,
+public/audio/merge/2.jpg,
+public/audio/merge/3.jpg,
+
+
+/audio-format-conversion 这个页面的示例图片是
+public/audio/conversion/1.jpg,
+public/audio/conversion/2.jpg,
+public/audio/conversion/3.jpg,
+
+
+/vocal-separation 这个页面的示例图片是
+public/audio/separation/1.jpg,
+public/audio/separation/2.jpg,
+public/audio/separation/3.jpg,
+
+
+
+/audio-to-text 这个页面的示例图片是
+public/audio/text/1.jpg,
+public/audio/text/2.jpg,
+public/audio/text/3.jpg,
+
+
+/audio-to-subtitles 这个页面的示例图片是
+public/audio/subtitles/1.jpg,
+public/audio/subtitles/2.jpg,
+public/audio/subtitles/3.jpg,
+
+
+
+/audio-repair 这个页面的示例图片是
+public/audio/repair/1.jpg,
+public/audio/repair/2.jpg,
+public/audio/repair/3.jpg,
+
+
+
+
+在字幕工具 然后再加上一个“PDF工具”，是一级菜单。
+PDF工具二级菜单：
+1、PDF合并
+2、PDF拆分
+3、PDF去重
+4、PDF转换
+5、PDF转语音
+6、PDF转文字
+7、PDF转字幕
+8、PDF转翻译
+对应的页面要加上 功能说明、使用帮助、案例展示、常见问题，要实现多语言功能。
+
+
+/pdf-merge，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+
+/pdf-merge， 这个页面的示例图片是
+public/pdf/merge/1.jpg,
+public/pdf/merge/2.jpg,
+public/pdf/merge/3.jpg,
+
+
+/pdf-split，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+
+
+/pdf-deduplicate，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+
+
+/pdf-convert，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+
+
+/pdf-to-audio，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+/pdf-to-audio， 这个页面的示例图片是
+public/pdf/audio/1.jpg,
+public/pdf/audio/2.jpg,
+public/pdf/audio/3.jpg,
+
+
+/pdf-to-text，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+public/pdf/text/1.jpg,
+public/pdf/text/2.jpg,
+public/pdf/text/3.jpg,
+
+/pdf-to-subtitles，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+
+
+/pdf-translate，这个页面实现多语言功能，除了中文与英文之外，其他都要实现。
+
+
+在PDF工具 然后再加上一个“CSV工具”，是一级菜单。
+CSV工具二级菜单：
+1、CSV合并
+2、CSV拆分
+3、CSV去重
+对应的页面要加上 功能说明、使用帮助、案例展示、常见问题，要实现多语言功能。
+
+
+
+在CSV工具 然后再加上一个“电子书工具”，是一级菜单。
+电子书工具二级菜单：
+1、电子书合并   
+2、电子书去除水印
+3、电子书转语音
+4、电子书生成字幕
+5、电子书格式转换
+对应的页面要加上 功能说明、使用帮助、案例展示、常见问题，要实现多语言功能。
+
+
+
+将CSV工具与电子书工具合并，改为“其他工具”，是一级菜单。
+其他工具二级菜单：
+1）CSV工具
+1、CSV合并
+2、CSV拆分
+3、CSV去重
+2) 电子书工具
+1、电子书合并   
+2、电子书去除水印
+3、电子书转语音
+4、电子书生成字幕
+5、电子书格式转换
+
+
+把PDF工具也放到其他工具里面把，作为二级菜单，请修改
+
+PDF&CSV&电子书
+
+将导航栏中的其他工具改为“PDF&CSV&电子书”，请修改
+
+
+将音频工具 改为“音频&字幕”，然后把字幕的二级菜单放到音频工具里面，请修改。
+
+
+
+在“PDF&CSV&电子书”，后面再加上一个“二维码&条码”，是一级菜单。
+1）二维码
+1、二维码生成（单个、批量）
+2、二维码识别（上传图片识别、调用电脑镜头识别）
+2）条码
+3、条码生成（单个、批量）
+4、条码识别（上传图片识别、调用电脑镜头识别）
+
+对应的页面要加上 功能说明、使用帮助、案例展示、常见问题，要实现多语言功能。
+
+
+
+/qrcode-generate，实现多语言啊。
+
+/qrcode-generate 这个页面，qrcode_generate.faq_title的中文与韩语没实现，其他语言也检查下这个。
+
+
+
+/qrcode-recognize，这个页面有些没实现多语言，如下：
+qrcode_recognize.examples_title
+qrcode_recognize.examples_desc
+qrcode_recognize.example_desc1
+qrcode_recognize.example_desc2
+qrcode_recognize.example_desc3
+qrcode_recognize.faq_title
+
+上面的多语言都没实现，请实现。
+
+
+
+
+
+/barcode-generate，这个页面有些没实现多语言，如下：
+
+barcode_generate.examples_title
+barcode_generate.examples_desc
+barcode_generate.example_desc1
+barcode_generate.example_desc2
+barcode_generate.example_desc3
+barcode_generate.faq_title
+
+
+上面的多语言都没实现，请实现。
+
+
+
+/barcode-recognize，这个页面有些没实现多语言，如下：
+
+barcode_recognize.examples_title
+barcode_recognize.examples_desc
+barcode_recognize.example_desc1
+barcode_recognize.example_desc2
+barcode_recognize.example_desc3
+barcode_recognize.faq_title
+
+上面的多语言都没实现，页面的所有的语言都要实现。
+
+
+/barcode-recognize，这个页面的
+barcode_recognize.faq_a1
+barcode_recognize.faq_a2
+barcode_recognize.faq_a3
+barcode_recognize.faq_a4
+barcode_recognize.faq_a5
+
+上面的葡萄牙语、西班牙语、韩语都没实现，请实现把。
+
+
+在图片工具下面再加上如下二次菜单：
+图片马赛克
+压缩图片
+图片网格
+圆角处理
+去除背景
+裁剪图片
+灰度处理
+文字转图片
+放大图片
+更换背景
+格式转换
+添加水印
+合并图片
+照片修复
+图片旋转
+ico图标生成器
+去除水印
+添加文字
+图片上色
+查看EXIF
+
+对应的页面要加上 功能说明、使用帮助、案例展示、常见问题，要实现多语言功能。
+
+
+/image-mosaic，这个页面实现葡萄牙语和韩语功能。
+
+
+
+/image-compress，这个页面实现葡萄牙语和韩语功能。
+
+
+
+/image-grid, 这个页面实现葡萄牙语和韩语功能。
+
+
+
+
+/image-grid, 这个页面的下面实现多语言，
+image_grid.upload_multiple
+image_grid.create_grid
+上面两个所有多语言都要实现。
+
+
+
+/image-grid, 这个页面的下面实现多语言，
+image_grid.upload_multiple
+上面的葡萄牙语、西班牙语、韩语都没实现，请实现。
+
+
+/rounded-corner，这个页面的下面实现多语言，按两个一组来实现，以防超时，明白我的意思吗？
+
+
+/rounded-corner，这个页面，实现葡萄牙语、西班牙语、韩语都没实现，请实现。
+
+
+/remove-background，这个页面实现多语言，按两个语言一组来实现，以防超时，明白我的意思吗？
+
+
+/crop-image，这个页面实现多语言，按两个语言一组来实现，以防超时，明白我的意思吗？
+
+
+/grayscale，这个页面实现多语言，按两个语言一组来实现，以防超时，明白我的意思吗？
+
+
+/text-to-image，这个页面实现多语言，按两个语言一组来实现，以防超时，明白我的意思吗？
+
+/text-to-image，这个页面还有好多没实现多语言，请实现。
+
+/text-to-image，这个页面，除了英文，中文，俄文实现之外，其他语言都没实现，请把其他语言都实现实现。
+
+
+/enlarge-image，这个页面实现多语言，按两个语言一组来实现，以防超时，明白我的意思吗？
+
+
+/change-background,这个页面实现多语言，按两个语言一组来实现，以防超时，明白我的意思吗？
+
+/change-background,这个页面还有好多没实现多语言，请实现。
+
+
+/image-format-conversion，这个页面实现多语言，按两个语言一组来实现，以防超时，
+还有就是页面所有都要实现多语言，不能漏掉，明白我的意思吗？
+
+
+/add-watermark，这个页面实现多语言，按两个语言一组来实现，以防超时，
+还有就是页面所有都要实现多语言，不能漏掉，明白我的意思吗？
+
+
+/merge-images，这个页面实现多语言，按两个语言一组来实现，以防超时，
+还有就是页面所有都要实现多语言，不能漏掉，明白我的意思吗？
+
+
+/photo-restoration，这个页面实现多语言，按两个语言一组来实现，以防超时，
+还有就是页面所有都要实现多语言，不能漏掉，明白我的意思吗？
+
+/photo-restoration，这个页面还有好多没实现多语言，请实现。
+
+/photo-restoration，这个页面还有法语、西班牙语、葡萄牙语，韩语，实现多语言，请实现。
+
+
+/rotate-image，这个页面实现多语言，按两个语言一组来实现，以防超时，
+还有就是页面所有都要实现多语言，不能漏掉，明白我的意思吗？
+
+
+/rotate-image，页面路径：/app/[lang]/rotate-image/page.tsx,
+多语言文件路径:/contexts/LanguageContext.tsx,
+这个页面的功能说明，示例，常见问题都没实现多语言，请实现多语言，
+按两个语言一组来实现，以防超时，不能漏掉，明白我的意思吗？
+
+
+/ico-generator，页面路径：/app/[lang]/ico-generator/page.tsx,
+多语言文件路径:/contexts/LanguageContext.tsx,
+这个页面的功能说明，示例，常见问题都没实现多语言，请实现多语言，
+按两个语言一组来实现，以防超时，不能漏掉，明白我的意思吗？
+
+
+
+
+
+/ico-generator，页面路径：/app/[lang]/ico-generator/page.tsx,
+多语言文件路径:/contexts/LanguageContext.tsx,
+这个页面的功能说明，示例，常见问题都实现多语言，实现法语，葡萄牙语，西班牙语，韩语，实现多语言。
+按两个语言一组来实现，以防超时，不能漏掉，明白我的意思吗？
+
+
+
+/add-text，页面路径：/app/[lang]/add-text/page.tsx,
+多语言文件路径:/contexts/LanguageContext.tsx,
+这个页面的功能说明，示例，常见问题都没实现多语言，请实现多语言，
+按两个语言一组来实现，以防超时，不能漏掉，明白我的意思吗？
+
+
+/add-text，页面路径：/app/[lang]/add-text/page.tsx,
+多语言文件路径:/contexts/LanguageContext.tsx,
+请实现阿拉伯语、日语、韩语，请实现这三个多语言。
+按两个语言一组来实现，以防超时，不能漏掉，明白我的意思吗？
+
+
+
+
+/colorize-image，页面路径：/app/[lang]/colorize-image/page.tsx,
+多语言文件路径:/contexts/LanguageContext.tsx,
+这个页面的功能说明，示例，常见问题都没实现多语言，请实现多语言，
+按两个语言一组来实现，以防超时，不能漏掉，明白我的意思吗？  
+
+
+
+
+/colorize-image，页面路径：/app/[lang]/colorize-image/page.tsx,
+多语言文件路径:/contexts/LanguageContext.tsx,
+这个页面的功能说明，示例，常见问题都实现多语言，实现法语，葡萄牙语，西班牙语，韩语，实现多语言。
+按两个语言一组来实现，以防超时，不能漏掉，明白我的意思吗？
+把执行后的内容写到log.md文件中，请记得完成这个需求。
+
+
+
+/colorize-image，页面路径：/app/[lang]/colorize-image/page.tsx,实现西班牙语功能。
+
+
+
+
+/colorize-image，页面路径：/app/[lang]/colorize-image/page.tsx,实现葡萄牙语功能。
+
+
+
+/contexts/LanguageContext.tsx, 这个文件太多，将这个文件拆分每一个语言一个文件，
+文件保存到 contexts/languages 文件夹中，而不是所有的语言都放到这个文件中，
+contexts/languages 文件夹下面的语言文件要主要编码，不能让它乱码了，
+修改后不影响项目运行，就是不影响多语言运行，明白我的意思吗？
+
+
+
+/view-exif,页面路径：/app/[lang]/view-exif/page.tsx,
+多语言文件路径:/contexts/languages 文件夹中,
+这个页面的功能说明，示例，常见问题都没实现多语言，请实现多语言，除了中文与英文之外，其他都要实现
+按两个语言一组来实现，以防超时，不能漏掉，明白我的意思吗？
+
+
+
+
+将“二维码&条码”的二级菜单以横向的方向展示，不要像原来那样是纵向的，请修改。
+
+
+修改错了，是二维码是一列， 条码一列，每列是纵向的，而不是每列是横向的，请修改。
+
+
+将“PDF&CSV&电子书”的二级菜单以横向的方向展示，不要像原来那样是纵向的，每一列是纵向的，明白我的意思吗
+
+这三列横向排列，每列内部是纵向的
+
+
+将“音频&字幕"的二级菜单以横向的方向展示，不要像原来那样是纵向的，每列横向排列，每列内部是纵向的，明白我的意思吗
+
+
+
+将“音频&字幕"的二级菜单中的"音频&字幕"改为"音频工具"，多语言都要实现哦
+
+
+
+将“图片工具"的二级菜单以横向的方向展示，不要像原来那样是纵向的，每列横向排列，每列内部是纵向的，就两列，一列是AI图片，另外一个是图片工具，明白我的意思吗
+
+
+
+将 /image-mosaic 这个页面的功能实现，
+这个页面的功能是对图片进行马赛克处理，用户可以选择某个局域进行马赛克，然后给用户下载，
+image_mosaic.mosaic_size，
+image_mosaic.process，
+上面两个文本没有实现多语言功能，请实现
+
+
+
+/image-mosaic 这个页面，还是没修改好啊，同一张图片，第二次选择区域进行马赛克 这个功能没实现，
+需要能二次选择区域进行马赛克，请实现这个功能
+
+
+Type error: Type 'string' is not assignable to type 'Language | undefined'.
+
+
+Type error: Type 'string' is not assignable to type 'Language | undefined'.
+  <LanguageProvider lang={lang}>
+上面报错，请修改
+
+
+
+Type error: Module '"@/contexts/LanguageContext"' declares 'Language' locally, but it is not exported.
+import type { Language } from '@/contexts/LanguageContext'
+上面报错
+
+
+
+Type error: Argument of type 'string' is not assignable to parameter of type 'Language'.
+
+onChange={(e) => {
+                  console.log('[DEBUG] select onChange triggered, value:', e.target.value)
+                 handleLanguageChange(e.target.value)
+                             
+                              }}
+
+上面报错
+
+
+
+Type error: An object literal cannot have multiple properties with the same name.
+ 'common.clear': 'مسح',
+
+
+ /image-compress, 这个页面实现该功能，对大图片进行压缩，包括各种格式，压缩后，让用户下载，请实现。
+
+
+ /image-grid，将该页面实现图片网格功能，请实现
+
+
+ /rounded-corner，将该页面实现图片圆角功能，可以自定义圆角参数，请实现。
+
+
+
+ /remove-background，实现该页面功能，将图片的背景去掉，请实现该功能。
+
+ /crop-image，实现该页面功能，对上传的图片进行裁剪功能，请实现。
+
+ /grayscale，对该页面实现图片灰色处理，请实现。
+
+ /text-to-image，实现该页面功能，文字转为图片，文字颜色和大小可以自定义，请实现。
+
+
+  /text-to-image，这个页面的input输入框字体颜色改为黑色，请实现。
+
+  /enlarge-image，实现该页面功能，对图片进行扩大，请实现。
+
+
+  /change-background，实现该页面的图片背景色更换的功能。
+
+
+  /image-format-conversion，实现该页面的图片格式转换功能， 
+
+
+  /add-watermark, 实现该页面功能，对图片添加水印功能，文字水印和图片水印，文字水印可以自定义，图片水印可以自定义，请实现。
+
+
+  /merge-images，实现该页面图片合并的功能，可以横向和纵向实现。
+
+  /photo-restoration,实现该页面的图片修复功能，请实现。
+
+
+  /rotate-image,实现该页面的图片旋转功能，请实现。
+
+  /ico-generator，实现该页面的图片ico图标生成功能，包括ico的圆角和大小都可以自定义，请实现。
+
+
+
+  /add-text，实现对图片添加文字，文字可以设置颜色和大小，位置，请实现。
+
+
+  /colorize-image，实现该页面对页面加上颜色，请实现。
+
+  /view-exif，实现该页面的图片exif信息查看功能，请实现。
+
+
+
+  /text-to-subtitles，实现该页面文字转为字幕文件的功能，字幕文件可以设置格式，文字输入框字体设置为黑色，请实现。
+
+
+  /subtitles-to-text，实现该页面字幕转为文字功能，请实现。
+
+
+  /subtitle-format-conversion，实现该页面的字幕格式转换功能，请实现。
+
+
+  /subtitle-translation，实现该页面字幕翻译功能，请实现。
+
+  /subtitle-merge，实现该页面的多个字幕文件合并功能，请实现。
+
+
+  /csv-merge, 实现该页面的csv文件合并，请实现。
+
+  /csv-split，实现该页面的csv文件拆分，请实现。
+
+  /csv-deduplicate，实现该页面的csv去重功能，请实现。
+
+  /audio-clip-merge，实现该页面的音频合并功能，请实现。
+
+  
+  /audio-format-conversion，实现该页面的音频格式转换功能，请实现。
+
+
+  /vocal-separation，实现该页面的音频人声分离功能，请实现。
+
+  /audio-to-text，实现该页面的音频转文字功能，请实现。
+
+
+  /audio-to-subtitles，实现该页面的音频转字幕功能，请实现。
+
+
+  /audio-repair，实现该页面的音频修复功能，请实现。
+
+
+  /qrcode-generate，实现该页面的生成单个二维码和批量生成二维码，请实现。
+
+
+  /qrcode-recognize，实现该页面的识别二维码的功能，请实现。
+
+
+  /barcode-generate，实现该页面的生成单个条码和批量生成条码，将“输入数据或数字”的文本框的字体颜色改为黑色，请实现。
+
+
+  /barcode-recognize，实现该页面的识别条码的功能，请实现。
+
+
+
+  /barcode-recognize, 这个页面识别失败，请修改这个页面，识别成功后，将识别结果显示在页面上，请实现。
+
+  /ebook-merge，实现该页面电子书合并功能。
+
+
+  PDF&CSV&电子书 在这个二级菜单下面再添加一个“文档转为电子书”的二级菜单，请实现。
+
+
+  /ebook-watermark-removal, 实现该页面的电子书去水印功能，请实现。
+
+  /ebook-to-speech，实现电子书转为语音功能，请实现。
+
+
+  /document-to-ebook，这个页面实现文档转为电子书失败，请检查下代码，然后修改。
+
+
+  /document-to-ebook，txt文件转为电子书失败，请检查下，或者打印日志检查下，请实现。
+
+
+
+  /ebook-to-speech，这个转换成功给用户下载，这个页面再添加常见问题。
+
+
+  /ebook-subtitles，实现该页面电子书转为字幕功能，转为成功给用户下载，请实现。
+
+
+  /ebook-format-conversion，实现该页面电子书格式转换功能，请实现。
+
+
+  /pdf-merge，请实现该页面的pdf合并功能，请实现。
+
+
+  /pdf-split，请实现pdf拆分功能，请实现。
+
+
+  /pdf-deduplicate，实现该页面的pdf相同的内容。
+
+
+
+  /pdf-convert，实现该页面的pdf格式转换功能，可以转为word,txt,excel,ppt,pdf,图片等格式，请实现。
+
+
+  将友情连接中的免费图片处理的链接改为https://mosaic.openai2025.com/，请修改
+
+
+  common.download  这个要实现多语言啊，请实现，还有一个问题是第二次选择上传pdf文件时，第一次选择时，没上传成功，第二次上传成功，请修改
+
+
+  /pdf-to-audio，pdf转为语音功能，成功后可以下载，请实现。
+
+
+  /pdf-to-text，实现pdf转为文字，请实现。
+
+  /pdf-to-subtitles，实现pdf转为字幕功能，请实现。
+
+  /pdf-translate，实现pdf翻译功能，请实现。
+
+
+
+PDF&CSV&电子书 在这个二级菜单“pdf工具”下面再添加一个“文档转为pdf”的二级菜单，也要加上这个页面，请实现。
+
+
+PDF&CSV&电子书 在这个二级菜单“pdf工具”下面再添加一个“pdf添加水印”的二级菜单，也要加上这个页面，要实现多语言，请实现。
+
+
+PDF&CSV&电子书 在这个二级菜单“pdf工具”下面再添加一个“pdf去水印”的二级菜单，也要加上这个页面，要实现多语言，请实现。
+
+
+/pdf-remove-watermark，第一次选择上传pdf文件时，第一次选择时，没上传成功，第二次上传成功，请修改
+
+
+
+在图片工具下面的二级菜单的“图片处理”最后加上一个图床功能，
+把图片上传到腾讯云上，配置在.env.local文件中，请实现。
+
+
+
+/video-watermark-removal，实现该功能，视频去水印功能，成功后可以下载，请实现。
+
+
+/video-to-text，实现该功能，视频转文字功能，成功后可以下载，请实现。
+
+
+/video-to-speech，实现该功能，视频转语音功能，成功后可以下载，请实现。
+
+
+/old-video-restoration，实现该功能，旧片修复功能，成功后可以下载，请实现。
+
+
+/audio-clip-merge，实现该功能，音频剪辑合并功能，成功后可以下载，请实现。
+
+/audio-format-conversion，实现该功能，音频格式转换功能，成功后可以下载，请实现。
+
+
+/video-to-text，这个页面功能，没明白我的意思，我意思是当使用转为文字时，只转了前面3秒中，后面都没转了，请修改这个bug。
+
+
+
+
+/video-to-speech，实现该页面，视频转为音频的功能，要实现多语言，请实现。
+
+
+/old-video-restoration，实现该页面旧电影修复功能，要实现多语言，请实现。
+
+
+
+
+
+/video-to-speech 这个页面的下面的实现多语言：
+
+How It Works
+
+Upload Video
+Upload any video file with speech
+
+
+AI Recognition
+Automatically recognize speech from video
+
+
+Multi-language TTS
+Convert to speech in any language
+
+
+20+ Languages
+Support for English, Chinese, Japanese, Korean, and more
+
+Real-time Processing
+Quick speech recognition and synthesis
+
+
+Adjustable Speed
+Control playback speed from 0.5x to 2x
+
+
+Natural Voices
+High-quality text-to-speech output
+
+
+
+在“图片工具” 下面的 在这个二级菜单“AI图像”下面再添加一个“AI抠图”的二级菜单，也要加上这个页面，实现多语言，请实现。
+
+
+
+在“图片工具” 下面的 在这个二级菜单“AI图像”下面再添加一个“AI文生图”的二级菜单，1积分一次，成功后可以下载，也要加上这个页面，实现多语言，请实现。
+
+
+在“图片工具” 下面的 在这个二级菜单“AI图像”下面再添加一个“AI文生视频”的二级菜单，2积分一次，成功后可以下载，也要加上这个页面，实现多语言，请实现。
+
+
+在“图片工具” 下面的 在这个二级菜单“AI图像”下面再添加一个“AI绘画”的二级菜单，2积分一次，成功后可以下载，也要加上这个页面，实现多语言，请实现。
+
+
+在“图片工具” 下面的 在这个二级菜单“AI图像”下面再添加一个“AI漫剧”的二级菜单，2积分一次，成功后可以下载，也要加上这个页面，实现多语言，请实现。
+
+
+
+将“AI图像”下面的二级菜单“性别转换”改为“AI性别转换”，然后把该页面中的“处理图片”按钮改为“处理图片(1积分)”，请修改
+
+
+
+/ai-face-beautify，该页面中的“处理图片”按钮改为“处理图片(1积分)”，请修改
+
+
+
+/pdf-convert，pdf转换页面，再加上excel,ppt ，markdown和html，请修改
+
+
+/remove-background 复制一个页面，页面改为AIRemoveBackground，请实现。
+
+
+图片工具中的AI图像中的“AI抠图”菜单去掉，请修改
+
+
+/remove-background，这个页面请修改下，不需要登录，也不需要积分，请修改，把标题改为”去除背景“，请实现。
+
+
+/text-to-image，复制一个页面，页面改为AITextToImage，功能保持不变，请实现。
+
+
+图片工具中的AI图像中的“AI文生图”菜单去掉，请修改，请实现。
+
+
+图片工具中的AI图像中的“AI文生图(新)”菜单 改为 "AI文生图"，请修改，请实现。
+
+
+/text-to-image, 把这个页面添加到图片工具中的图片处理中的“文字图片”菜单，功能只要js就能实现，
+就是把文字转为图片，而不是根据文字描述生成对应的，明白我的意思吗？
+
+
+/text-to-image, 这个页面的改为”文字转为图片“，请修改，请实现。
+
+
+
+在“图片工具” 下面的在这个二级菜单“图片处理”下面再添加一个“图片九宫格”的二级菜单，
+免费使用，就是将一张图片切为9宫格，让用户下载即可，要实现多语言，请实现。
+
+
+
+/ai-text-to-image，标题是”AI文生图“，/text-to-image, 这个页面的改为”文字转图片“，请修改，请实现。
+
+
+npm error Found: onnxruntime-web@1.24.3
+npm error node_modules/onnxruntime-web
+npm error   onnxruntime-web@"^1.24.3" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peer onnxruntime-web@"1.21.0" from @imgly/background-removal@1.7.0
+npm error node_modules/@imgly/background-removal
+npm error   @imgly/background-removal@"^1.7.0" from the root project
+npm error
+npm error Conflicting peer dependency: onnxruntime-web@1.21.0
+npm error node_modules/onnxruntime-web
+npm error   peer onnxruntime-web@"1.21.0" from @imgly/background-removal@1.7.0
+npm error   node_modules/@imgly/background-removal
+npm error     @imgly/background-removal@"^1.7.0" from the root project
+
+
+
+/nine-grid，这个页面再加上功能说明，使用方法，常见问题，要实现多语言，请实现

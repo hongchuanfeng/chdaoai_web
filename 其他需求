@@ -1,0 +1,169 @@
+AI Age change
+
+1、在导航栏再加上一个“AI Age change”，
+
+2、该功能调用腾讯云接口，接口文档如下：
+https://cloud.tencent.com/document/product/460/47197
+
+3、UI做成跟 public/demo1.png 一样，要实现响应式布局，要实现自适应布局，要实现响应式设计，要实现响应式设计。
+
+4、先实现英文版本，再实现中文版本。
+
+5、ai-age-change 页面中 添加功能说明和使用帮助，示例展示，常见问题
+
+
+6、ai-age-change 页面中只有用户登录后才能使用，并且要有积分才能使用，没积分给出提示，有积分则扣除1个积分。
+每使用一次就扣一个积分。
+
+
+
+
+Gender Swapper
+
+1、在导航栏再加上一个“Gender Swapper”，
+
+2、该功能调用腾讯云接口，接口文档如下：
+https://cloud.tencent.com/document/product/460/47197
+接口中的参数type：人脸性别转换：face-gender-transformation；
+3、UI做成跟 public/demo1.png 一样，要实现响应式布局，要实现自适应布局，要实现响应式设计，要实现响应式设计。
+
+4、先实现英文版本，再实现中文版本。
+
+5、该页面中 添加功能说明和使用帮助，示例展示，常见问题
+
+6、该页面中只有用户登录后才能使用，并且要有积分才能使用，没积分给出提示，有积分则扣除1个积分。
+每使用一次就扣一个积分。
+
+
+AI face beautify
+
+1、在导航栏再加上一个“AI face beautify”，
+
+2、该功能调用腾讯云接口，接口文档如下：
+https://cloud.tencent.com/document/product/460/47197
+
+接口中的参数type：人脸美颜：face-beautify；
+
+3、UI做成跟 public/demo3.png 一样，要实现响应式布局，要实现自适应布局，要实现响应式设计，要实现响应式设计。
+
+4、先实现英文版本，再实现中文版本。
+
+5、该页面中 添加功能说明和使用帮助，示例展示，常见问题
+
+6、该页面中只有用户登录后才能使用，并且要有积分才能使用，没积分给出提示，有积分则扣除1个积分。
+每使用一次就扣一个积分。
+
+
+
+将订阅菜单移到导航栏菜单最后面
+
+
+
+将public/image/b8.png作为去logo和去水印前的图片，将public/image/a8.png作为去logo和去水印后的图片。
+
+
+AI Age change、Gender Swapper、AI face beautify  这个导航栏菜单实现其他多语言，先实现菜单即可。
+
+
+ai-age-change页面 上传的图片要全图显示，而不是放大显示，请修改
+
+
+ai-age-change页面上传图片时，没登录不要用弹窗提示，直接在页面加个提示即可
+
+
+ai-age-change处理失败，请检查下，然后就是处理失败，不要弹窗，直接写在页面即可。
+
+
+ai-age-change页面请检查下调用接口是否正常，把调用接口的前后参数打印出来，请修改，
+接口文档:https://cloud.tencent.com/document/product/460/47197
+
+type：face-age-transformation，
+
+Request URL： 在.env.local文件中配置中的TENCENT_REGION和TENCENT_COS_BUCKET
+
+
+
+
+
+将public/age/b1.png作为AI变龄前的图片，将public/age/a1.png作为AI变龄后的图片，示例1，
+
+将public/age/b2.png作为AI变龄前的图片，将public/age/a2.png作为AI变龄后的图片，示例2，
+
+将public/age/b3.png作为AI变龄前的图片，将public/age/a3.png作为AI变龄后的图片，示例3.
+
+
+ai-age-change页面实现其他多语言吧，多语言太多，按两个一组来处理。
+
+
+gender-swapper页面的上传图片后图片要全部显示，不要放大，请修改
+
+
+gender-swapper页面的没有登录时，不要弹窗提示，直接显示在页面上，还有就是处理失败后也要显示在页面上，不要弹窗。
+
+
+gender-swapper页面的签名改为跟首页一样的，然后把接口的前后参数都打印出来。
+
+Gender Swapper 添加示例展示：
+
+将public/gender/b1.png作为Gender Swapper前的图片，将public/gender/a1.png作为Gender Swapper后的图片，示例1，
+
+将public/gender/b2.png作为Gender Swapper前的图片，将public/gender/a2.png作为Gender Swapper后的图片，示例2，
+
+将public/gender/b3.png作为Gender Swapper前的图片，将public/gender/a3.png作为Gender Swapper后的图片，示例3.
+
+要实现多语言功能。
+
+
+
+gender-swapper页面实现其他多语言吧，多语言太多，按两个一组来处理。
+
+
+ai-face-beautify页面处理图片的UI 改为跟 public/demo3.png 一样，要实现响应式布局，要实现自适应布局，要实现响应式设计，要实现响应式设计。
+
+
+ai-face-beautify页面UI修改为：上传图片后可以设置美白（数值：0-100），磨皮（数值：0-100），瘦脸（数值：0-100），
+大眼（数值：0-100），请修改。
+
+
+ai-face-beautify页面的没有登录时，不要弹窗提示，直接显示在页面上，还有就是处理失败后也要显示在页面上，不要弹窗。
+
+
+ai-face-beautify页面的签名改为跟首页一样的，然后把接口的前后参数都打印出来。
+
+
+AI Face Beautify 添加示例展示：
+
+将public/face/b1.png作为AI Face Beautify前的图片，将public/face/a1.png作为AI Face Beautify后的图片，示例1，
+
+将public/face/b2.png作为AI Face Beautify前的图片，将public/face/a2.png作为AI Face Beautify后的图片，示例2，
+
+将public/face/b3.png作为AI Face Beautify前的图片，将public/face/a3.png作为AI Face Beautify后的图片，示例3.
+
+要实现多语言功能。
+
+
+ai-face-beautify页面实现其他多语言吧，多语言太多，按两个一组来处理。
+
+
+
+
+首页再加上订阅套餐明细，然后可以点击订阅套餐明细，然后跳转到订阅套餐页面。
+
+
+首页的订阅套餐明细请实现其他多语言啊，多语言太多，按两个一组来处理。
+
+
+ai-face-beautify页面的 上传您的照片 和 结果 两个div 高度一致，请修改
+
+profile页面中的“个人中心”标题 字体改为黑色
+
+
+
+将项目中的域名https://www.chdaoai.com/ 改为：https://www.chdaoai.com/
+
+
+
+
+
+
+
