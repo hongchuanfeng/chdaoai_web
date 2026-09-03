@@ -1,4 +1,6 @@
-export default {    'nav.home': '홈',
+export default {    'promo.banner': '무료 회원가입 - 100크레딧 받기!',
+    'promo.signup': '지금 가입하기',
+    'nav.home': '홈',
     'nav.about': '회사 소개',
     'nav.contact': '문의하기',
     'nav.subscribe': '구독',

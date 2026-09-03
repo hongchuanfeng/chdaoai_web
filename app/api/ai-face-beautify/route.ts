@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import COS from 'cos-nodejs-sdk-v5'
 import crypto from 'crypto'
-import { supabaseClient } from '@/lib/supabase'
+import { getUserById, deductCredits, addCreditHistory } from '@/lib/mysql'
 
 // 腾讯云配置
 const SECRET_ID = process.env.TENCENT_SECRET_ID!
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('Request parameters:', {
-      imageUrl: imageUrl.substring(0, 100) + '...', // 只显示前100个字符
+      imageUrl: imageUrl.substring(0, 100) + '...',
       whitening,
       skinSmooth,
       faceSlim,
@@ -40,13 +40,9 @@ export async function POST(request: NextRequest) {
     })
 
     // 检查用户积分
-    const { data: userData, error: userError } = await supabaseClient
-      .from('users')
-      .select('credits')
-      .eq('id', userId)
-      .single()
+    const userData = await getUserById(userId)
 
-    if (userError || !userData) {
+    if (!userData) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -88,26 +84,15 @@ export async function POST(request: NextRequest) {
 
     // 只有在处理成功后才扣除积分
     console.log('Processing successful, deducting credits...')
-    const { error: updateError } = await supabaseClient
-      .from('users')
-      .update({ credits: userData.credits - 1 })
-      .eq('id', userId)
-
-    if (updateError) {
-      console.error('Failed to deduct credits after successful processing:', updateError)
-      // 处理成功但扣费失败，返回成功结果但记录错误
-      console.warn('Credits were not deducted due to database error')
-    } else {
-      // 记录积分历史
-      await supabaseClient
-        .from('credit_history')
-        .insert({
-          user_id: userId,
-          amount: -1,
-          type: 'spent',
-          description: 'AI Face Beautify processing'
-        })
-    }
+    await deductCredits(userId, 1)
+    
+    // 记录积分历史
+    await addCreditHistory(
+      userId,
+      1,
+      'spent',
+      'AI Face Beautify processing'
+    )
 
     const finalImageData = `data:image/jpeg;base64,${result.ResultImage}`
     console.log('Final image data URL (first 100 chars):', finalImageData.substring(0, 100))
@@ -115,7 +100,7 @@ export async function POST(request: NextRequest) {
 
     const responseData = {
       success: true,
-      resultImage: finalImageData.substring(0, 100) + '...', // 只在日志中显示前100个字符
+      resultImage: finalImageData.substring(0, 100) + '...',
       message: 'Face beautify processing completed successfully'
     }
 
@@ -159,9 +144,8 @@ function uploadToCOS(key: string, data: Buffer): Promise<any> {
   })
 }
 
-// 调用腾讯云AI美颜API（数据万象人脸特效接口）
+// 调用腾讯云AI美颜API
 async function callTencentFaceBeautifyAPI(inputKey: string, outputKey: string, whitening: number, skinSmooth: number, faceSlim: number, eyeEnlarge: number): Promise<{ ResultImage: string; OutputUrl?: string }> {
-  // 使用COS SDK生成签名URL，这样更可靠（参考remove-watermark和ai-age-change的实现）
   const queryString = `ci-process=face-effect&type=face-beautify&whitening=${whitening}&smoothing=${skinSmooth}&face-slim=${faceSlim}&eye-enlarge=${eyeEnlarge}`
 
   console.log('=== AI Face Beautify API Call ===')
@@ -182,7 +166,7 @@ async function callTencentFaceBeautifyAPI(inputKey: string, outputKey: string, w
       Key: inputKey,
       Sign: true,
       QueryString: queryString,
-      Expires: 600, // 10分钟过期
+      Expires: 600,
     }
 
     console.log('COS getObjectUrl parameters:', getObjectUrlParams)
@@ -198,7 +182,6 @@ async function callTencentFaceBeautifyAPI(inputKey: string, outputKey: string, w
       console.log('Generated signed URL:', signedUrl)
 
       try {
-        // 使用签名URL发送请求
         const response = await fetch(signedUrl)
 
         console.log('Response status:', response.status)
@@ -210,11 +193,9 @@ async function callTencentFaceBeautifyAPI(inputKey: string, outputKey: string, w
           throw new Error(`Tencent API request failed: ${response.status} ${response.statusText} - ${errorText}`)
         }
 
-        // 获取响应数据 - 腾讯云数据万象返回XML格式
         const xmlResponse = await response.text()
         console.log('Raw XML response (first 500 chars):', xmlResponse.substring(0, 500))
 
-        // 解析XML响应，提取Base64图片数据
         const base64Match = xmlResponse.match(/<ResultImage>([^<]+)<\/ResultImage>/)
         if (!base64Match) {
           console.error('No ResultImage found in XML response')
@@ -237,4 +218,3 @@ async function callTencentFaceBeautifyAPI(inputKey: string, outputKey: string, w
     })
   })
 }
-

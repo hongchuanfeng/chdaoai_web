@@ -1,28 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { addKeepAliveLog } from '@/lib/mysql'
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
-    
     // Insert log record with timestamp
-    const { error } = await supabase
-      .from('keep_alive_logs')
-      .insert({
-        timestamp: new Date().toISOString(),
-        log: `Keep-alive request at ${new Date().toISOString()}`,
-      })
+    const log = `Keep-alive request at ${new Date().toISOString()}`
+    await addKeepAliveLog(log)
 
-    if (error) {
-      console.error('Error inserting keep-alive log:', error)
-      return NextResponse.json(
-        { error: 'Failed to log keep-alive request' },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({ success: 'success' })
+    return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error('Keep-alive error:', error)
     return NextResponse.json(

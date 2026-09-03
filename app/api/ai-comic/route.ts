@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import COS from 'cos-nodejs-sdk-v5'
-import { supabaseClient } from '@/lib/supabase'
+import { getUserById, deductCredits, addCreditHistory } from '@/lib/mysql'
 
 const SECRET_ID = process.env.TENCENT_SECRET_ID!
 const SECRET_KEY = process.env.TENCENT_SECRET_KEY!
@@ -59,13 +59,9 @@ export async function POST(request: NextRequest) {
     })
 
     // 检查用户积分
-    const { data: userData, error: userError } = await supabaseClient
-      .from('users')
-      .select('credits')
-      .eq('id', userId)
-      .single()
+    const userData = await getUserById(userId)
 
-    if (userError || !userData) {
+    if (!userData) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -88,23 +84,14 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('Processing successful, deducting credits...')
-    const { error: updateError } = await supabaseClient
-      .from('users')
-      .update({ credits: userData.credits - 2 })
-      .eq('id', userId)
-
-    if (updateError) {
-      console.error('Failed to deduct credits after successful processing:', updateError)
-    } else {
-      await supabaseClient
-        .from('credit_history')
-        .insert({
-          user_id: userId,
-          amount: -2,
-          type: 'spent',
-          description: `AI Comic generation (${style || 'manga'} style)`
-        })
-    }
+    await deductCredits(userId, 2)
+    
+    await addCreditHistory(
+      userId,
+      2,
+      'spent',
+      `AI Comic generation (${style || 'manga'} style)`
+    )
 
     const finalImageData = `data:image/png;base64,${result.ResultImage}`
     console.log('Final image data length:', result.ResultImage.length)

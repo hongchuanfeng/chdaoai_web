@@ -1,4 +1,6 @@
-export default {    'nav.home': 'Início',
+export default {    'promo.banner': 'Registro Gratuito - Ganhe 100 Créditos!',
+    'promo.signup': 'Cadastre-se Agora',
+    'nav.home': 'Início',
     'nav.about': 'Sobre',
     'nav.contact': 'Contato',
     'nav.subscribe': 'Assinar',

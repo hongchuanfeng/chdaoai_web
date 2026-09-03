@@ -1,4 +1,6 @@
-export default {    'nav.home': 'الرئيسية',
+export default {    'promo.banner': 'التسجيل المجاني - احصل على 100 نقطة!',
+    'promo.signup': 'سجل الآن',
+    'nav.home': 'الرئيسية',
     'nav.about': 'من نحن',
     'nav.contact': 'اتصل بنا',
     'nav.subscribe': 'اشترك',

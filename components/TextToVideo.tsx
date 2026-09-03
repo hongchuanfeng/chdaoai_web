@@ -2,7 +2,6 @@
 
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function TextToVideo() {
   const { t } = useLanguage()
@@ -13,7 +12,6 @@ export default function TextToVideo() {
   const [error, setError] = useState<string | null>(null)
   const [user, setUser] = useState<any>(null)
   const [videoLoaded, setVideoLoaded] = useState(false)
-  const supabase = createClientComponentClient()
 
   const examplePrompts = [
     t('text_to_video.example1') || 'A beautiful sunset over the ocean waves',
@@ -23,11 +21,18 @@ export default function TextToVideo() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
+      try {
+        const res = await fetch('/api/auth/me')
+        if (res.ok) {
+          const data = await res.json()
+          setUser(data.user)
+        }
+      } catch (err) {
+        console.error('Failed to get user:', err)
+      }
     }
     getUser()
-  }, [supabase.auth])
+  }, [])
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return

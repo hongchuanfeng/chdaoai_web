@@ -2,7 +2,6 @@
 
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function AiComic() {
   const { t } = useLanguage()
@@ -13,15 +12,21 @@ export default function AiComic() {
   const [error, setError] = useState<string | null>(null)
   const [user, setUser] = useState<any>(null)
   const [comicStyle, setComicStyle] = useState('manga')
-  const supabase = createClientComponentClient()
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
+      try {
+        const res = await fetch('/api/auth/me')
+        if (res.ok) {
+          const data = await res.json()
+          setUser(data.user)
+        }
+      } catch (err) {
+        console.error('Failed to get user:', err)
+      }
     }
     getUser()
-  }, [supabase.auth])
+  }, [])
 
   const comicStyles = [
     { id: 'manga', name: 'Manga', emoji: '📖' },

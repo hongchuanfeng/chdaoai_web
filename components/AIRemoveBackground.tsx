@@ -2,7 +2,6 @@
 
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useState, useRef, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function AIRemoveBackground() {
   const { t } = useLanguage()
@@ -15,15 +14,21 @@ export default function AIRemoveBackground() {
   const [error, setError] = useState<string | null>(null)
   const [user, setUser] = useState<any>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const supabase = createClientComponentClient()
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
+      try {
+        const res = await fetch('/api/auth/me')
+        if (res.ok) {
+          const data = await res.json()
+          setUser(data.user)
+        }
+      } catch (err) {
+        console.error('Failed to get user:', err)
+      }
     }
     getUser()
-  }, [supabase.auth])
+  }, [])
 
   const examples = [
     { image: '/image/background/1.jpg', title: t('ai_remove_background.example_desc1') },

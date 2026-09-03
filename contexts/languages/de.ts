@@ -1,4 +1,6 @@
-export default {    'nav.home': 'Startseite',
+export default {    'promo.banner': 'Kostenlose Anmeldung - Erhalte 100 Credits!',
+    'promo.signup': 'Jetzt Anmelden',
+    'nav.home': 'Startseite',
     'nav.about': 'Über uns',
     'nav.contact': 'Kontakt',
     'nav.subscribe': 'Abonnieren',

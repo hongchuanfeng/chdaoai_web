@@ -4,6 +4,7 @@ import HowItWorks from '@/components/HowItWorks'
 import UseCases from '@/components/UseCases'
 import FAQ from '@/components/FAQ'
 import CTA from '@/components/CTA'
+import PromotionBanner from '@/components/PromotionBanner'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -17,9 +18,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default function LangHomePage() {
+export default function LangHomePage({ params }: { params: { lang: string } }) {
+  const lang = params.lang || 'en'
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <PromotionBanner lang={lang} />
       <RemoveWatermarkInline />
       <Features />
       <HowItWorks />

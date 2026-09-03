@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseClient } from '@/lib/supabase'
+import { getUserById, deductCredits, addCreditHistory } from '@/lib/mysql'
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,13 +29,9 @@ export async function POST(request: NextRequest) {
     })
 
     // 检查用户积分 (文生视频需要2积分)
-    const { data: userData, error: userError } = await supabaseClient
-      .from('users')
-      .select('credits')
-      .eq('id', userId)
-      .single()
+    const userData = await getUserById(userId)
 
-    if (userError || !userData) {
+    if (!userData) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -52,8 +48,6 @@ export async function POST(request: NextRequest) {
     // 调用腾讯云文生视频API
     console.log('Calling Tencent Text to Video API...')
     
-    // 模拟视频生成 (实际项目中需要调用真实的腾讯云视频生成API)
-    // 腾讯云暂无公开的文生视频API，这里返回示例视频
     const result = await callTencentTextToVideoAPI(prompt)
     
     if (!result) {
@@ -61,24 +55,15 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('Processing successful, deducting credits...')
-    const { error: updateError } = await supabaseClient
-      .from('users')
-      .update({ credits: userData.credits - 2 })
-      .eq('id', userId)
-
-    if (updateError) {
-      console.error('Failed to deduct credits after successful processing:', updateError)
-    } else {
-      // 记录积分历史
-      await supabaseClient
-        .from('credit_history')
-        .insert({
-          user_id: userId,
-          amount: -2,
-          type: 'spent',
-          description: 'AI Text to Video generation'
-        })
-    }
+    await deductCredits(userId, 2)
+    
+    // 记录积分历史
+    await addCreditHistory(
+      userId,
+      2,
+      'spent',
+      'AI Text to Video generation'
+    )
 
     console.log('Final video URL length:', result.videoUrl ? result.videoUrl.length : 0)
 
@@ -103,13 +88,7 @@ export async function POST(request: NextRequest) {
 async function callTencentTextToVideoAPI(prompt: string): Promise<{ videoUrl: string } | null> {
   try {
     // 由于腾讯云暂无公开的文生视频API，这里返回示例视频URL
-    // 实际项目中可以接入第三方文生视频API，如:
-    // - Runway ML
-    // - Pika Labs
-    // - Stable Video Diffusion
-    // - 字节跳动/D-ID等
-    
-    // 返回一个示例视频（公开可用的视频）
+    // 实际项目中可以接入第三方文生视频API
     const demoVideoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
     
     console.log('Using demo video URL:', demoVideoUrl)

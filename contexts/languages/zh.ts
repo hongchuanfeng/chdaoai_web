@@ -1,4 +1,7 @@
-export default {    'nav.home': '首页',
+export default {
+    'promo.banner': '免费注册 - 获得100积分！',
+    'promo.signup': '立即注册',
+    'nav.home': '首页',
     'nav.about': '关于我们',
     'nav.contact': '联系我们',
     'nav.subscribe': '订阅',

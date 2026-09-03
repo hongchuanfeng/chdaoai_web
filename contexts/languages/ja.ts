@@ -1,4 +1,6 @@
-export default {    'nav.home': 'ホーム',
+export default {    'promo.banner': '無料登録 - 100クレジットGET！',
+    'promo.signup': '今すぐ登録',
+    'nav.home': 'ホーム',
     'nav.about': '私たちについて',
     'nav.contact': 'お問い合わせ',
     'nav.subscribe': '購読',

@@ -2,7 +2,6 @@
 
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function AITextToImage() {
   const { t } = useLanguage()
@@ -12,7 +11,6 @@ export default function AITextToImage() {
   const [processingProgress, setProcessingProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [user, setUser] = useState<any>(null)
-  const supabase = createClientComponentClient()
 
   const examplePrompts = [
     t('ai_text_to_image.example1') || 'A beautiful sunset over the ocean',
@@ -22,11 +20,18 @@ export default function AITextToImage() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
+      try {
+        const res = await fetch('/api/auth/me')
+        if (res.ok) {
+          const data = await res.json()
+          setUser(data.user)
+        }
+      } catch (err) {
+        console.error('Failed to get user:', err)
+      }
     }
     getUser()
-  }, [supabase.auth])
+  }, [])
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return

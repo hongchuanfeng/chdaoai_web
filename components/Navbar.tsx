@@ -4,12 +4,17 @@ import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
 import type { Language } from '@/contexts/LanguageContext'
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
+
+interface User {
+  id: string
+  email: string
+  credits?: number
+}
 
 export default function Navbar() {
   const { language, setLanguage, t } = useLanguage()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [mobileOpen, setMobileOpen] = useState<boolean>(false)
   const [loading, setLoading] = useState(false)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
@@ -31,7 +36,6 @@ export default function Navbar() {
   const [mobileCsvToolsOpen, setMobileCsvToolsOpen] = useState(false)
   const [mobileOtherToolsOpen, setMobileOtherToolsOpen] = useState(false)
   const [mobileQRCodeToolsOpen, setMobileQRCodeToolsOpen] = useState(false)
-  const supabase = createClientComponentClient()
   const router = useRouter()
 
   // 辅助函数：获取带语言前缀的路径
@@ -40,72 +44,61 @@ export default function Navbar() {
     return `/${lang}${path}`
   }
 
-  const ensureUserRecord = async (u: any) => {
-    if (!u?.id) return
-    const { data, error } = await supabase
-      .from('users')
-      .select('id')
-      .eq('id', u.id)
-      .single()
-
-    if ((error && error.code === 'PGRST116') || (!data && !error)) {
-      await supabase
-        .from('users')
-        .insert({
-          id: u.id,
-          email: u.email,
-          credits: 5,
-        })
-    }
-  }
-
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      if (user) {
-        await ensureUserRecord(user)
+      try {
+        const response = await fetch('/api/auth/me')
+        if (response.ok) {
+          const data = await response.json()
+          setUser(data.user)
+        } else {
+          setUser(null)
+        }
+      } catch (error) {
+        console.error('Failed to get user:', error)
+        setUser(null)
       }
       setLoading(false)
     }
     getUser()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        ensureUserRecord(session.user)
-      }
-    })
-
-    return () => subscription.unsubscribe()
-  }, [supabase])
+  }, [])
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/')
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      setUser(null)
+      router.push('/')
+      router.refresh()
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
   }
 
   const handleLanguageChange = (newLang: Language) => {
-    console.log('[DEBUG] handleLanguageChange called, newLang:', newLang)
+    // 只有语言确实改变时才处理
+    if (newLang === language) {
+      return
+    }
     
-    // 始终更新语言状态
-    setLanguage(newLang)
+    // 不需要手动更新 LanguageContext 的状态
+    // 因为导航到新路径后，[lang] 布局会重新挂载并从 URL 参数初始化语言
+    // 这避免了状态和 URL 不同步的问题
+    
+    // 更新 cookies 和 localStorage
     document.cookie = `language=${newLang};path=/;max-age=31536000`
     localStorage.setItem('language', newLang)
     
-    // 始终跳转（即使选择了相同的语言也强制刷新）
+    // 使用 Next.js router 进行导航
     const currentPath = window.location.pathname
-    console.log('[DEBUG] currentPath:', currentPath)
     
+    // 移除当前语言前缀
     const pathWithoutLang = currentPath.replace(/^\/(en|zh|ru|ar|de|ja|fr|es|pt|ko)/, '') || '/'
-    console.log('[DEBUG] pathWithoutLang:', pathWithoutLang)
     
+    // 构建新路径
     const newPath = getLangPath(pathWithoutLang, newLang)
-    console.log('[DEBUG] newPath:', newPath)
     
-    // 强制页面跳转
-    console.log('[DEBUG] Calling window.location.replace')
-    window.location.replace(newPath)
+    // 使用 router 进行客户端导航
+    router.push(newPath)
   }
 
   return (
@@ -806,9 +799,7 @@ export default function Navbar() {
             <div className="relative hidden sm:block">
               <select
                 value={language}
-                onClick={() => console.log('[DEBUG] select clicked, current value:', language)}
                 onChange={(e) => {
-                  console.log('[DEBUG] select onChange triggered, value:', e.target.value)
                   handleLanguageChange(e.target.value as Language)
                 }}
                 className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent cursor-pointer w-20"

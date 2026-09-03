@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 interface WatermarkArea {
@@ -15,7 +14,6 @@ interface WatermarkArea {
 export default function RemoveWatermarkInline() {
   const { t } = useLanguage()
   const router = useRouter()
-  const supabase = createClientComponentClient()
 
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
@@ -36,33 +34,35 @@ export default function RemoveWatermarkInline() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-
-      if (user) {
-        const { data: userData } = await supabase
-          .from('users')
-          .select('credits')
-          .eq('id', user.id)
-          .single()
-
-        if (userData) {
-          setUserCredits(userData.credits)
-        } else {
-          const { error } = await supabase
-            .from('users')
-            .insert({
-              id: user.id,
-              email: user.email,
-              credits: 5,
-            })
-          if (!error) setUserCredits(5)
+      try {
+        const res = await fetch('/api/auth/me')
+        if (res.ok) {
+          const data = await res.json()
+          setUser(data.user)
+          
+          if (data.user) {
+            // Get user credits
+            try {
+              const creditsRes = await fetch('/api/auth/credits')
+              if (creditsRes.ok) {
+                const creditsData = await creditsRes.json()
+                setUserCredits(creditsData.credits)
+              } else {
+                // User doesn't have credits yet, initialize with 5
+                setUserCredits(5)
+              }
+            } catch {
+              setUserCredits(5)
+            }
+          }
         }
+      } catch (err) {
+        console.error('Failed to get user:', err)
       }
       setCheckingAuth(false)
     }
     checkAuth()
-  }, [supabase])
+  }, [])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]

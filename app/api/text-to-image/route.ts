@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import COS from 'cos-nodejs-sdk-v5'
-import { supabaseClient } from '@/lib/supabase'
+import { getUserById, deductCredits, addCreditHistory } from '@/lib/mysql'
 
 const SECRET_ID = process.env.TENCENT_SECRET_ID!
 const SECRET_KEY = process.env.TENCENT_SECRET_KEY!
@@ -58,13 +58,9 @@ export async function POST(request: NextRequest) {
     })
 
     // 检查用户积分
-    const { data: userData, error: userError } = await supabaseClient
-      .from('users')
-      .select('credits')
-      .eq('id', userId)
-      .single()
+    const userData = await getUserById(userId)
 
-    if (userError || !userData) {
+    if (!userData) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -81,7 +77,6 @@ export async function POST(request: NextRequest) {
     // 调用腾讯云文生图API
     console.log('Calling Tencent Text to Image API...')
     
-    // 腾讯云文生图API - 使用万象优图服务
     const result = await callTencentTextToImageAPI(prompt)
     
     if (!result || !result.ResultImage) {
@@ -89,24 +84,15 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('Processing successful, deducting credits...')
-    const { error: updateError } = await supabaseClient
-      .from('users')
-      .update({ credits: userData.credits - 1 })
-      .eq('id', userId)
-
-    if (updateError) {
-      console.error('Failed to deduct credits after successful processing:', updateError)
-    } else {
-      // 记录积分历史
-      await supabaseClient
-        .from('credit_history')
-        .insert({
-          user_id: userId,
-          amount: -1,
-          type: 'spent',
-          description: 'AI Text to Image generation'
-        })
-    }
+    await deductCredits(userId, 1)
+    
+    // 记录积分历史
+    await addCreditHistory(
+      userId,
+      1,
+      'spent',
+      'AI Text to Image generation'
+    )
 
     const finalImageData = `data:image/png;base64,${result.ResultImage}`
     console.log('Final image data length:', result.ResultImage.length)
@@ -130,18 +116,11 @@ export async function POST(request: NextRequest) {
 }
 
 async function callTencentTextToImageAPI(prompt: string): Promise<{ ResultImage: string }> {
-  // 腾讯云文生图API调用
-  // 使用腾讯云图像编辑API进行文生图
-  
   return new Promise<{ ResultImage: string }>((resolve, reject) => {
-    // 生成一个随机文件名
     const timestamp = Date.now()
     const inputKey = `text-to-image/input/${timestamp}.txt`
     
-    // 首先上传提示词到COS
     uploadToCOS(inputKey, Buffer.from(prompt)).then(() => {
-      // 使用COS SDK生成签名URL进行文生图处理
-      // ci-process=text-process&type=text-to-image
       const queryString = `ci-process=text-process&action=TextToImage&prompt=${encodeURIComponent(prompt)}&width=1024&height=1024&num=1`
       
       const getObjectUrlParams = {
@@ -171,7 +150,6 @@ async function callTencentTextToImageAPI(prompt: string): Promise<{ ResultImage:
           if (!response.ok) {
             const errorText = await response.text()
             console.error('Response error text:', errorText)
-            // 如果腾讯云API不可用，返回演示图片
             console.log('Using demo image as fallback')
             resolve({
               ResultImage: generateDemoImage(prompt),
@@ -179,11 +157,9 @@ async function callTencentTextToImageAPI(prompt: string): Promise<{ ResultImage:
             return
           }
 
-          // 获取响应数据
           const xmlResponse = await response.text()
           console.log('Raw response (first 500 chars):', xmlResponse.substring(0, 500))
 
-          // 解析响应，提取Base64图片数据
           const base64Match = xmlResponse.match(/<ResultImage>([^<]+)<\/ResultImage>/)
           if (base64Match) {
             const base64Data = base64Match[1]
@@ -191,13 +167,11 @@ async function callTencentTextToImageAPI(prompt: string): Promise<{ ResultImage:
             return
           }
 
-          // 尝试OutputUrl格式
           const outputUrlMatch = xmlResponse.match(/<OutputUrl>([^<]+)<\/OutputUrl>/)
           if (outputUrlMatch) {
             const outputUrl = outputUrlMatch[1]
             console.log('Got output URL:', outputUrl)
             
-            // 下载图片
             const imgResponse = await fetch(outputUrl)
             if (!imgResponse.ok) {
               throw new Error('Failed to download processed image')
@@ -208,7 +182,6 @@ async function callTencentTextToImageAPI(prompt: string): Promise<{ ResultImage:
             return
           }
 
-          // 如果没有找到预期的响应格式，使用演示图片
           console.log('No expected format found, using demo image')
           resolve({
             ResultImage: generateDemoImage(prompt),
@@ -216,7 +189,6 @@ async function callTencentTextToImageAPI(prompt: string): Promise<{ ResultImage:
 
         } catch (fetchError) {
           console.error('Fetch error:', fetchError)
-          // 返回演示图片作为后备
           resolve({
             ResultImage: generateDemoImage(prompt),
           })
@@ -229,9 +201,7 @@ async function callTencentTextToImageAPI(prompt: string): Promise<{ ResultImage:
   })
 }
 
-// 生成演示图片（SVG格式的Base64编码）
 function generateDemoImage(prompt: string): string {
-  // 创建一个简单的SVG演示图片
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
   <defs>

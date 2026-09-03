@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import COS from 'cos-nodejs-sdk-v5'
 import crypto from 'crypto'
-import { supabaseClient } from '@/lib/supabase'
+import { getUserById, deductCredits, addCreditHistory } from '@/lib/mysql'
 
 // 腾讯云配置
 const SECRET_ID = process.env.TENCENT_SECRET_ID!
@@ -32,15 +32,11 @@ export async function POST(request: NextRequest) {
 
     // 检查用户积分
     console.log('Checking user credits for userId:', userId)
-    const { data: userData, error: userError } = await supabaseClient
-      .from('users')
-      .select('credits')
-      .eq('id', userId)
-      .single()
+    const userData = await getUserById(userId)
 
-    console.log('User data:', userData, 'Error:', userError)
+    console.log('User data:', userData)
 
-    if (userError || !userData) {
+    if (!userData) {
       console.error('User not found error')
       return NextResponse.json(
         { error: 'User not found' },
@@ -90,26 +86,15 @@ export async function POST(request: NextRequest) {
 
     // 只有在处理成功后才扣除积分
     console.log('Processing successful, deducting credits...')
-    const { error: updateError } = await supabaseClient
-      .from('users')
-      .update({ credits: userData.credits - 1 })
-      .eq('id', userId)
-
-    if (updateError) {
-      console.error('Failed to deduct credits after successful processing:', updateError)
-      // 处理成功但扣费失败，返回成功结果但记录错误
-      console.warn('Credits were not deducted due to database error')
-    } else {
-      // 记录积分历史
-      await supabaseClient
-        .from('credit_history')
-        .insert({
-          user_id: userId,
-          amount: -1,
-          type: 'spent',
-          description: 'AI Age Change processing'
-        })
-    }
+    await deductCredits(userId, 1)
+    
+    // 记录积分历史
+    await addCreditHistory(
+      userId,
+      1,
+      'spent',
+      'AI Age Change processing'
+    )
 
     const finalImageData = `data:image/jpeg;base64,${result.ResultImage}`
     console.log('Final image data URL (first 100 chars):', finalImageData.substring(0, 100))
@@ -152,9 +137,8 @@ function uploadToCOS(key: string, data: Buffer): Promise<any> {
   })
 }
 
-// 调用腾讯云AI年龄变换API（数据万象人脸特效接口）
+// 调用腾讯云AI年龄变换API
 async function callTencentAgeChangeAPI(inputKey: string, outputKey: string, age: number): Promise<{ ResultImage: string }> {
-  // 使用COS SDK生成签名URL，这样更可靠（参考remove-watermark的实现）
   const queryString = `ci-process=face-effect&type=face-age-transformation&age=${age}`
 
   console.log('=== AI Age Change API Call ===')
@@ -172,7 +156,7 @@ async function callTencentAgeChangeAPI(inputKey: string, outputKey: string, age:
       Key: inputKey,
       Sign: true,
       QueryString: queryString,
-      Expires: 600, // 10分钟过期
+      Expires: 600,
     }, async (err, data) => {
       if (err) {
         console.error('COS getObjectUrl error:', err)
@@ -184,7 +168,6 @@ async function callTencentAgeChangeAPI(inputKey: string, outputKey: string, age:
       console.log('Generated signed URL:', signedUrl)
 
       try {
-        // 使用签名URL发送请求
         const response = await fetch(signedUrl)
 
         console.log('Response status:', response.status)
@@ -196,15 +179,11 @@ async function callTencentAgeChangeAPI(inputKey: string, outputKey: string, age:
           throw new Error(`Tencent API request failed: ${response.status} ${response.statusText} - ${errorText}`)
         }
 
-        // 获取响应数据 - 腾讯云返回XML格式
         const responseText = await response.text()
         console.log('Raw API Response:', responseText)
 
-        // 解析响应数据
-        console.log('Parsing response data...')
         let resultBase64 = ''
 
-        // 检查是否是XML格式的响应
         if (responseText.includes('<ResultImage>')) {
           console.log('Detected XML response format')
           const resultImageMatch = responseText.match(/<ResultImage>([\s\S]*?)<\/ResultImage>/)
@@ -215,7 +194,6 @@ async function callTencentAgeChangeAPI(inputKey: string, outputKey: string, age:
             throw new Error('Failed to parse XML response: ResultImage tag not found')
           }
         } else {
-          // 可能是直接的base64数据
           console.log('Detected direct response format')
           resultBase64 = responseText.trim()
           console.log('Using direct response as base64, length:', resultBase64.length)
@@ -223,14 +201,8 @@ async function callTencentAgeChangeAPI(inputKey: string, outputKey: string, age:
 
         console.log('Base64 data preview (first 50 chars):', resultBase64.substring(0, 50))
 
-        // 验证base64数据的有效性
         if (!resultBase64 || resultBase64.length === 0) {
           throw new Error('Empty base64 image data received')
-        }
-
-        // 检查是否是有效的base64格式（简单检查）
-        if (!/^[A-Za-z0-9+/]*={0,2}$/.test(resultBase64.replace(/\s/g, ''))) {
-          console.warn('Base64 data may not be valid format')
         }
 
         resolve({
@@ -242,106 +214,4 @@ async function callTencentAgeChangeAPI(inputKey: string, outputKey: string, age:
       }
     })
   })
-}
-
-// 计算腾讯云API签名
-function calculateSignature(payload: string, headers: Record<string, string>, timestamp: number, date: string, service: string): string {
-  const algorithm = 'TC3-HMAC-SHA256'
-  const canonicalHeaders = Object.keys(headers)
-    .sort()
-    .map(key => `${key.toLowerCase()}:${headers[key]}`)
-    .join('\n') + '\n'
-
-  const signedHeaders = Object.keys(headers)
-    .sort()
-    .map(key => key.toLowerCase())
-    .join(';')
-
-  const canonicalRequest = 'POST\n/\n\n' + canonicalHeaders + signedHeaders + '\n' + hash(payload)
-
-  const credentialScope = `${date}/${service}/tc3_request`
-  const stringToSign = algorithm + '\n' + timestamp + '\n' + credentialScope + '\n' + hash(canonicalRequest)
-
-  const secretDate = hmac(`TC3${SECRET_KEY}`, date)
-  const secretService = hmac(secretDate, service)
-  const secretSigning = hmac(secretService, 'tc3_request')
-  const signature = hmac(secretSigning, stringToSign, 'hex') as string
-
-  return signature
-}
-
-// 计算COS签名（用于数据万象）- 基于腾讯云COS SDK实现
-function calculateCOSSignature(method: string, path: string, queryParams: URLSearchParams, headers: Record<string, string>, timestamp: number): string {
-  const keyTime = `${timestamp};${timestamp + 600}`
-
-  // 1. 计算SignKey
-  const signKey = crypto.createHmac('sha1', SECRET_KEY).update(keyTime.split(';')[0]).digest()
-
-  // 2. 构建HttpString
-  let httpString = ''
-
-  // HttpMethod (小写)
-  httpString += method.toLowerCase() + '\n'
-
-  // HttpURI
-  httpString += path + '\n'
-
-  // HttpParameters - URL参数（排序并编码）
-  const sortedParams = Array.from(queryParams.entries()).sort((a, b) => a[0].localeCompare(b[0]))
-  if (sortedParams.length > 0) {
-    const paramString = sortedParams.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&')
-    httpString += paramString + '\n'
-  } else {
-    httpString += '\n'
-  }
-
-  // HttpHeaders（排序并编码）
-  const sortedHeaders = Object.keys(headers).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-  const headerList = sortedHeaders.map(key => key.toLowerCase()).join(';')
-  const headerString = sortedHeaders.map(key => {
-    const keyLower = key.toLowerCase()
-    const value = headers[key]
-    return `${keyLower}=${encodeURIComponent(value)}`
-  }).join('&')
-  httpString += headerString + '\n'
-
-  // SignedHeaders
-  httpString += headerList + '\n'
-
-  // 3. 计算StringToSign
-  const sha1HttpString = crypto.createHash('sha1').update(httpString).digest('hex')
-  const stringToSign = `sha1\n${keyTime}\n${sha1HttpString}\n`
-
-  // 4. 计算最终签名
-  const signature = crypto.createHmac('sha1', signKey).update(stringToSign).digest('hex')
-
-  console.log('=== COS Signature Debug ===')
-  console.log('KeyTime:', keyTime)
-  console.log('Method (lowercase):', method.toLowerCase())
-  console.log('Path:', path)
-  console.log('Query Params:', Object.fromEntries(queryParams.entries()))
-  console.log('Sorted Query Params:', sortedParams)
-  console.log('Headers:', headers)
-  console.log('Sorted Headers:', sortedHeaders)
-  console.log('Header List:', headerList)
-  console.log('Param String:', sortedParams.length > 0 ? sortedParams.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&') : '(empty)')
-  console.log('Header String:', headerString)
-  console.log('HttpString (raw):', JSON.stringify(httpString))
-  console.log('HttpString (visible):', httpString.replace(/\n/g, '\\n'))
-  console.log('SHA1(HttpString):', sha1HttpString)
-  console.log('StringToSign (raw):', JSON.stringify(stringToSign))
-  console.log('StringToSign (visible):', stringToSign.replace(/\n/g, '\\n'))
-  console.log('Final Signature:', signature)
-
-  return signature
-}
-
-// HMAC-SHA256 辅助函数
-function hmac(key: string | Buffer, data: string, encoding?: 'hex'): string | Buffer {
-  return crypto.createHmac('sha256', key).update(data).digest(encoding as any)
-}
-
-// SHA256 哈希函数
-function hash(data: string): string {
-  return crypto.createHash('sha256').update(data).digest('hex')
 }

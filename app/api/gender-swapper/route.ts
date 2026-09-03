@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import COS from 'cos-nodejs-sdk-v5'
 import crypto from 'crypto'
-import { supabaseClient } from '@/lib/supabase'
+import { getUserById, deductCredits, addCreditHistory } from '@/lib/mysql'
 
 // 腾讯云配置
 const SECRET_ID = process.env.TENCENT_SECRET_ID!
@@ -27,13 +27,9 @@ export async function POST(request: NextRequest) {
     }
 
     // 检查用户积分
-    const { data: userData, error: userError } = await supabaseClient
-      .from('users')
-      .select('credits')
-      .eq('id', userId)
-      .single()
+    const userData = await getUserById(userId)
 
-    if (userError || !userData) {
+    if (!userData) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -48,27 +44,15 @@ export async function POST(request: NextRequest) {
     }
 
     // 扣除积分
-    const { error: updateError } = await supabaseClient
-      .from('users')
-      .update({ credits: userData.credits - 1 })
-      .eq('id', userId)
-
-    if (updateError) {
-      return NextResponse.json(
-        { error: 'Failed to deduct credits' },
-        { status: 500 }
-      )
-    }
-
+    await deductCredits(userId, 1)
+    
     // 记录积分历史
-    await supabaseClient
-      .from('credit_history')
-      .insert({
-        user_id: userId,
-        amount: -1,
-        type: 'spent',
-        description: 'Gender Swapper processing'
-      })
+    await addCreditHistory(
+      userId,
+      1,
+      'spent',
+      'Gender Swapper processing'
+    )
 
     // 下载原始图片
     const imageResponse = await fetch(imageUrl)
@@ -137,10 +121,9 @@ function uploadToCOS(key: string, data: Buffer): Promise<any> {
   })
 }
 
-// 调用腾讯云AI性别转换API（数据万象人脸特效接口）
+// 调用腾讯云AI性别转换API
 async function callTencentGenderSwapAPI(inputKey: string, outputKey: string, targetGender: string): Promise<{ ResultImage: string; OutputUrl?: string }> {
-  // 使用COS SDK生成签名URL，这样更可靠（参考remove-watermark的实现）
-  const genderParam = targetGender === 'male' ? '1' : '0' // 0：男变女，1：女变男
+  const genderParam = targetGender === 'male' ? '1' : '0'
   const queryString = `ci-process=face-effect&type=face-gender-transformation&gender=${genderParam}`
 
   console.log('=== Gender Swapper API Call ===')
@@ -159,7 +142,7 @@ async function callTencentGenderSwapAPI(inputKey: string, outputKey: string, tar
       Key: inputKey,
       Sign: true,
       QueryString: queryString,
-      Expires: 600, // 10分钟过期
+      Expires: 600,
     }, async (err, data) => {
       if (err) {
         console.error('COS getObjectUrl error:', err)
@@ -171,7 +154,6 @@ async function callTencentGenderSwapAPI(inputKey: string, outputKey: string, tar
       console.log('Generated signed URL:', signedUrl)
 
       try {
-        // 使用签名URL发送请求
         const response = await fetch(signedUrl)
 
         console.log('Response status:', response.status)
@@ -183,15 +165,11 @@ async function callTencentGenderSwapAPI(inputKey: string, outputKey: string, tar
           throw new Error(`Tencent API request failed: ${response.status} ${response.statusText} - ${errorText}`)
         }
 
-        // 获取响应数据 - 腾讯云返回XML格式
         const responseText = await response.text()
         console.log('Raw API Response:', responseText)
 
-        // 解析XML响应，提取ResultImage字段
-        console.log('Parsing response data...')
         let resultBase64 = ''
 
-        // 检查是否是XML格式的响应
         if (responseText.includes('<ResultImage>')) {
           console.log('Detected XML response format')
           const resultImageMatch = responseText.match(/<ResultImage>([\s\S]*?)<\/ResultImage>/)
@@ -202,7 +180,6 @@ async function callTencentGenderSwapAPI(inputKey: string, outputKey: string, tar
             throw new Error('Failed to parse XML response: ResultImage tag not found')
           }
         } else {
-          // 可能是直接的base64数据
           console.log('Detected direct response format')
           resultBase64 = responseText.trim()
           console.log('Using direct response as base64, length:', resultBase64.length)
@@ -210,7 +187,6 @@ async function callTencentGenderSwapAPI(inputKey: string, outputKey: string, tar
 
         console.log('Base64 data preview (first 50 chars):', resultBase64.substring(0, 50))
 
-        // 验证base64数据的有效性
         if (!resultBase64 || resultBase64.length === 0) {
           throw new Error('Empty base64 image data received')
         }
@@ -230,4 +206,3 @@ async function callTencentGenderSwapAPI(inputKey: string, outputKey: string, tar
     })
   })
 }
-

@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import COS from 'cos-nodejs-sdk-v5'
+import { 
+  getUserById, 
+  createUser, 
+  deductCredits, 
+  addCreditHistory,
+  createConversion,
+  getUserFromCookies 
+} from '@/lib/mysql'
+import bcrypt from 'bcryptjs'
 
 const cos = new COS({
   SecretId: process.env.TENCENT_SECRET_ID,
@@ -31,41 +39,18 @@ function getSignedUrl(key: string, queryString: string = ''): Promise<string> {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
-    const { data: { user } } = await supabase.auth.getUser()
-
+    const user = await getUserFromCookies()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('credits')
-      .eq('id', user.id)
-      .single()
-
-    if (userError || !userData) {
-      const { error: insertError } = await supabase
-        .from('users')
-        .insert({
-          id: user.id,
-          email: user.email,
-          credits: 5,
-        })
-
-      if (insertError) {
-        return NextResponse.json({ error: 'Failed to check credits' }, { status: 500 })
-      }
-
-      await supabase
-        .from('credit_history')
-        .insert({
-          user_id: user.id,
-          amount: 5,
-          type: 'initial',
-          description: 'Welcome bonus - 5 free credits',
-          created_at: new Date().toISOString(),
-        })
+    let userData = await getUserById(user.id)
+    
+    if (!userData) {
+      const hashedPassword = await bcrypt.hash('oauth_user_' + user.id, 10)
+      await createUser(user.id, user.email, hashedPassword, 5)
+      await addCreditHistory(user.id, 5, 'initial', 'Welcome bonus - 5 free credits')
+      userData = await getUserById(user.id)
     }
 
     const credits = userData?.credits || 5
@@ -112,10 +97,8 @@ export async function POST(request: NextRequest) {
     let resultUrl = videoUrl
 
     // 使用腾讯云视频增强能力处理旧视频
-    // 这里使用 media/transcode 进行画质增强
     const processingQuery = `ci-process=video&mode=async&jobType=1`
 
-    // 预览用URL
     resultUrl = `${videoUrl}?${processingQuery}`
 
     // 下载处理结果
@@ -157,35 +140,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Deduct credit
-    await supabase
-      .from('users')
-      .update({ credits: credits - 1 })
-      .eq('id', user.id)
+    await deductCredits(user.id, 1)
 
     // Save conversion record
-    const { data: conversionData, error: conversionError } = await supabase
-      .from('conversions')
-      .insert({
-        user_id: user.id,
-        original_url: videoUrl,
-        result_url: resultUrl,
-        created_at: new Date().toISOString(),
-      })
-      .select()
-      .single()
+    const conversionId = await createConversion(user.id, videoUrl, resultUrl)
 
-    if (conversionData) {
-      await supabase
-        .from('credit_history')
-        .insert({
-          user_id: user.id,
-          amount: 1,
-          type: 'spent',
-          description: 'Old video restoration',
-          related_conversion_id: conversionData.id,
-          created_at: new Date().toISOString(),
-        })
-    }
+    await addCreditHistory(user.id, 1, 'spent', 'Old video restoration', String(conversionId))
 
     return NextResponse.json({ resultUrl })
   } catch (error: any) {

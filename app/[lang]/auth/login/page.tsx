@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 // 简单的翻译
@@ -13,7 +12,6 @@ const translations: Record<string, Record<string, string>> = {
     email: 'Email', 
     password: 'Password', 
     sign_in: 'Sign In',
-    or_continue: 'or continue with',
     forgot_password: 'Forgot Password?',
     no_account: "Don't have an account?",
     register: 'Sign Up',
@@ -26,7 +24,6 @@ const translations: Record<string, Record<string, string>> = {
     email: '邮箱', 
     password: '密码', 
     sign_in: '登录',
-    or_continue: '或使用以下方式继续',
     forgot_password: '忘记密码?',
     no_account: '还没有账户？',
     register: '注册',
@@ -39,7 +36,6 @@ const translations: Record<string, Record<string, string>> = {
     email: 'Эл. почта', 
     password: 'Пароль', 
     sign_in: 'Войти',
-    or_continue: 'или продолжить с',
     forgot_password: 'Забыли пароль?',
     no_account: 'Нет аккаунта?',
     register: 'Регистрация',
@@ -52,7 +48,6 @@ const translations: Record<string, Record<string, string>> = {
     email: 'البريد الإلكتروني', 
     password: 'كلمة المرور', 
     sign_in: 'تسجيل الدخول',
-    or_continue: 'أو تابع باستخدام',
     forgot_password: 'نسيت كلمة المرور؟',
     no_account: 'ليس لديك حساب؟',
     register: 'تسجيل',
@@ -65,7 +60,6 @@ const translations: Record<string, Record<string, string>> = {
     email: 'E-Mail', 
     password: 'Passwort', 
     sign_in: 'Anmelden',
-    or_continue: 'oder fortfahren mit',
     forgot_password: 'Passwort vergessen?',
     no_account: 'Kein Konto?',
     register: 'Registrieren',
@@ -78,7 +72,6 @@ const translations: Record<string, Record<string, string>> = {
     email: 'メールアドレス', 
     password: 'パスワード', 
     sign_in: 'ログイン',
-    or_continue: 'または以下で続行',
     forgot_password: 'パスワードをお忘れですか？',
     no_account: 'アカウントをお持ちでないですか？',
     register: '登録',
@@ -91,7 +84,6 @@ const translations: Record<string, Record<string, string>> = {
     email: 'E-mail', 
     password: 'Mot de passe', 
     sign_in: 'Se connecter',
-    or_continue: 'ou continuer avec',
     forgot_password: 'Mot de passe oublié ?',
     no_account: 'Pas de compte ?',
     register: "S'inscrire",
@@ -104,7 +96,6 @@ const translations: Record<string, Record<string, string>> = {
     email: 'Correo electrónico', 
     password: 'Contraseña', 
     sign_in: 'Iniciar sesión',
-    or_continue: 'o continuar con',
     forgot_password: '¿Olvidaste tu contraseña?',
     no_account: '¿No tienes cuenta?',
     register: 'Regístrate',
@@ -117,7 +108,6 @@ const translations: Record<string, Record<string, string>> = {
     email: 'E-mail', 
     password: 'Senha', 
     sign_in: 'Entrar',
-    or_continue: 'ou continue com',
     forgot_password: 'Esqueceu a senha?',
     no_account: 'Não tem conta?',
     register: 'Cadastre-se',
@@ -130,7 +120,6 @@ const translations: Record<string, Record<string, string>> = {
     email: '이메일', 
     password: '비밀번호', 
     sign_in: '로그인',
-    or_continue: '또는 계속하기',
     forgot_password: '비밀번호를 잊으셨나요?',
     no_account: '계정이 없으신가요?',
     register: '회원가입',
@@ -143,7 +132,6 @@ const translations: Record<string, Record<string, string>> = {
 export default function LoginPage() {
   const router = useRouter()
   const { language: lang } = useLanguage()
-  const supabase = useMemo(() => createClientComponentClient(), [])
   
   const t = (key: string) => translations[lang]?.[key] || translations['en'][key] || key
 
@@ -161,30 +149,34 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
     
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-    if (signInError) {
-      setError(signInError.message)
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || (lang === 'en' ? 'Login failed' : '登录失败'))
+        setLoading(false)
+        return
+      }
+
+      router.push(`/${lang}/profile`)
+      router.refresh()
+    } catch (err) {
+      setError(lang === 'en' ? 'Network error, please try again' : '网络错误，请重试')
       setLoading(false)
-      return
     }
-
-    router.push(`/${lang}/profile`)
-    router.refresh()
   }
 
-  const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${location.origin}/${lang}/auth/callback`,
-      },
-    })
-    if (error) {
-      setError(error.message)
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSubmit()
     }
   }
 
@@ -197,31 +189,6 @@ export default function LoginPage() {
           </h2>
         </div>
 
-        {/* Google 登录按钮 */}
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 py-2.5 px-4 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition mb-6"
-        >
-          <svg className="w-5 h-5" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-          </svg>
-          Google
-        </button>
-
-        {/* 分隔线 */}
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white text-gray-500">{t('or_continue')}</span>
-          </div>
-        </div>
-
         {/* 登录表单 */}
         <div className="space-y-4">
           <div>
@@ -232,6 +199,7 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder={t('email_placeholder')}
               className="w-full h-11 px-4 bg-[#E8F0FE] rounded-lg border-0 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -245,6 +213,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder={t('password_placeholder')}
               className="w-full h-11 px-4 bg-[#E8F0FE] rounded-lg border-0 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -266,9 +235,6 @@ export default function LoginPage() {
 
         {/* 底部链接 */}
         <div className="mt-6 text-center text-sm">
-          <a href="#" className="text-blue-600 hover:underline mr-4">
-            {t('forgot_password')}
-          </a>
           <span className="text-gray-500">{t('no_account')}</span>
           <Link href={`/${lang}/auth/register`} className="text-blue-600 hover:underline ml-1">
             {t('register')}
