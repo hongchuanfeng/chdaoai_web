@@ -115,6 +115,18 @@ export default function Navbar() {
               <Link href={getLangPath('/', language)} className="text-gray-700 hover:text-primary-600 px-2 py-2 text-sm font-medium whitespace-nowrap">
                 {t('nav.home')}
               </Link>
+
+              <Link href={getLangPath('/tools', language)} className="text-gray-700 hover:text-primary-600 px-2 py-2 text-sm font-medium whitespace-nowrap">
+                {language === 'zh' ? '所有工具' : 'All Tools'}
+              </Link>
+
+              <Link href={getLangPath('/guides', language)} className="text-gray-700 hover:text-primary-600 px-2 py-2 text-sm font-medium whitespace-nowrap">
+                {language === 'zh' ? '指南' : 'Guides'}
+              </Link>
+
+              <Link href={getLangPath('/blog', language)} className="text-gray-700 hover:text-primary-600 px-2 py-2 text-sm font-medium whitespace-nowrap">
+                {language === 'zh' ? '博客' : 'Blog'}
+              </Link>
               
               {/* Image Tools Dropdown */}
               <div className="relative">
@@ -883,7 +895,16 @@ export default function Navbar() {
             <Link href={getLangPath('/', language)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50" onClick={() => setMobileOpen(false)}>
               {t('nav.home')}
             </Link>
-            
+            <Link href={getLangPath('/tools', language)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50" onClick={() => setMobileOpen(false)}>
+              {language === 'zh' ? '所有工具' : 'All Tools'}
+            </Link>
+            <Link href={getLangPath('/guides', language)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50" onClick={() => setMobileOpen(false)}>
+              {language === 'zh' ? '指南' : 'Guides'}
+            </Link>
+            <Link href={getLangPath('/blog', language)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50" onClick={() => setMobileOpen(false)}>
+              {language === 'zh' ? '博客' : 'Blog'}
+            </Link>
+
             {/* Mobile Image Tools Dropdown */}
             <div>
               <button 
